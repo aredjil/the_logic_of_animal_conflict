@@ -105,16 +105,23 @@ class Mouse: public Animal{
 char& Mouse::rule(const char& opp_move, const int &iter){
     if(iter > t_lim){
         next_move = 'R';
+        curr_move ='R';
     }else if(opp_move =='D'){
         next_move = 'R';
+        curr_move ='R';
         double u = get_rv();
         if(u<prob_injury){
+            win=false;
             payoff-=100;
+            seriously_injured=true;
         }else{
             payoff-=2;
         }
+    } else if(opp_move =='R'){
+        win=true;
     }else{
         next_move='C';
+        curr_move ='R';
     }
     return next_move;
 };
@@ -124,7 +131,7 @@ char& Mouse::rule(const char& opp_move, const int &iter){
  */
 class Hawk: public Animal{
     public:
-    char& rule(const char& opp_move);
+    char& rule(const char& opp_move, const int&iter);
 };
 /**
  * Update rule for the Hawk Class,
@@ -133,12 +140,17 @@ class Hawk: public Animal{
  * seriously injured then play R
  * or if the oponnent plays R. 
  */
-char& Hawk::rule(const char& opp_move){
+char& Hawk::rule(const char& opp_move, const int&iter){
+    if(opp_move =='R'){
+        win=true;
+        if(iter < t_lim){
+            payoff+=60;
+        }
+    }
     if(opp_move == 'D'){
         double u = get_rv();
         if(u < prob_injury){
             next_move ='R';
-            
             win=false;
             seriously_injured=true;
             payoff -= 100;
