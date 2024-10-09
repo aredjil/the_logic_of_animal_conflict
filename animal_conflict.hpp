@@ -5,7 +5,10 @@
 #include<algorithm>
 /**
  * Animal class.
+ * TODO: Add iteration count.
+ * FIXME: Fix the order of instructions. 
  */
+//NOTE: Add simulation duration to the paramters of the objects. 
 class Animal{
     public:
     /**
@@ -65,22 +68,34 @@ class Animal{
      */
     double get_rv();
 };
-
+/**
+ * Helper function to generate a unifrom random variable (RV) 
+ * in the interval [0, 1], U(0, 1), for each run a new RV is generated.
+ */
 double Animal::get_rv(){
     {
-    std::random_device rv;
-    std::mt19937_64 gen(rv());
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
-    return dist(gen);
+    std::random_device rv; // Collect randomness from the device
+    std::mt19937_64 gen(rv());// Seeded Pseudo-random number generator
+    std::uniform_real_distribution<double> dist(0.0, 1.0); // U(0, 1)
+    return dist(gen); // Return a U(0, 1).
 };
 
 }
-// Mouse class 
+/**
+ * Mouse class
+ */
 
 class Mouse: public Animal{
     public: 
     char& rule(const char & opp_move);
 };
+/**
+ * Update rule for the mouse class 
+ * The agent always play C, unless
+ * the opponent plays D, then it retreats
+ * and plays R. If the game continious
+ * past a predetermined time it retreats R.  
+ */
 char& Mouse::rule(const char& opp_move){
     if(opp_move == 'D'){
         next_move= 'R';
@@ -97,13 +112,20 @@ char& Mouse::rule(const char& opp_move){
     return next_move;
 };
 
-// Hawk Class 
-
+/**
+ * Hawk Class
+ */
 class Hawk: public Animal{
     public:
     char& rule(const char& opp_move);
 };
-
+/**
+ * Update rule for the Hawk Class,
+ * Always play D, untill the time
+ * threshold is reached or if 
+ * seriously injured then play R
+ * or if the oponnent plays R. 
+ */
 char& Hawk::rule(const char& opp_move){
     if(opp_move == 'D'){
         double u = get_rv();
@@ -123,13 +145,20 @@ char& Hawk::rule(const char& opp_move){
     return next_move;
 };
 
-// Bully class 
-
+/**
+ * Bully class 
+ */
 class Bully: public Animal{
     public:
     char& rule(const char& opp_curr_move, const char& opp_prev_move); 
 };
-
+/**
+ * Update rule for the bully class
+ * probe (play D in the first move)
+ * reponsed to C by D, conversly, 
+ * responsed to D by C, play R if 
+ * opponent plays consuctive D. 
+ */
 char& Bully::rule(const char& opp_curr_move, const char& opp_prev_move){
     if(opp_curr_move =='C'){
         next_move = 'D';
@@ -168,16 +197,26 @@ char& Bully::rule(const char& opp_curr_move, const char& opp_prev_move){
     return next_move;
 }
 
-// Retaliator class 
+/**
+ * Retaliator class 
+*/ 
 
-class Retliator: public Animal{
+class Retaliator: public Animal{
     public:
     char& rule(const char& opp_move);
 };
 
-// Retliator update rule
+/**
+ * Retaliator update rule
+ * play C in first move
+ * repond to C by C
+ * if opponent plays D
+ * with high probability play D
+ * play R after a threshold.
+ */
 
-char& Retliator::rule(const char& opp_move){
+
+char& Retaliator::rule(const char& opp_move){
     if(opp_move =='C'){
         next_move='C';   
         
@@ -206,4 +245,39 @@ char& Retliator::rule(const char& opp_move){
         std::cerr<<"The opponents move is illegal"<<std::endl;
     };
     return next_move;
+};
+/**
+ * Prober-Retaliator Class 
+ */
+class Prober_Retaliator: public Animal{
+    public:
+    char& rule(const char& opp_move);
+};
+
+/**
+ * Prober_Retaliator update rule
+ * NOTE: comment it when you immplement the function.
+ */ 
+
+char& Prober_Retaliator::rule(const char& opp_move){
+    /**
+     * If the opponent plays C with hgih probability play C
+     * And with low probability play D.
+     */ 
+    if(opp_move =='C'){
+        double u = get_rv();
+        if(u < ret_prob){
+            next_move ='C';
+        }else{
+            next_move='D';
+        };
+        /**
+         * After giving a probe (provocation, playing D at the first move)
+         * revert to C if the opponent retaliate (plays D), otherwise play D.
+         */
+
+        /**
+         * After receiving a probe with hgih probability esclate (Play D as a response)
+         */
+    }
 };
