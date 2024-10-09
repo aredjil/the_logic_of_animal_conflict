@@ -18,7 +18,6 @@ class Animal{
         D: Dangerous tactic. 
         R: Retreat. 
     */
-    char prev_move;
     /**
      * Store current move 
      */
