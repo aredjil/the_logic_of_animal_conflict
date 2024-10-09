@@ -86,10 +86,10 @@ char& Mouse::rule(const char& opp_move){
         next_move= 'R';
     }else if (opp_move == 'C'){
         next_move = 'C';
-        prev_move ='C';
+        
     }else if(opp_move =='R'){
         next_move = 'C';
-        prev_move= 'C';
+        
         win=true; // 1 
     }else{
         std::cerr<<"That is an illegal move"<<std::endl;
@@ -109,13 +109,13 @@ char& Hawk::rule(const char& opp_move){
         double u = get_rv();
         if(u < prob_injury){
             next_move ='R';
-            prev_move ='R';
+            
             win=false;
             seriously_injured=true;
             payoff -= 100;
         }else{
             next_move = 'D';
-            prev_move ='D';
+           
 
             payoff -= 2;
         }
@@ -133,20 +133,20 @@ class Bully: public Animal{
 char& Bully::rule(const char& opp_curr_move, const char& opp_prev_move){
     if(opp_curr_move =='C'){
         next_move = 'D';
-        prev_move ='D';
+       
 
     }else if(opp_curr_move =='D' && opp_prev_move=='D'){
         double u = get_rv();
         if(u < prob_injury){
             next_move ='R';
-            prev_move ='R';
+            
             win=false;
             seriously_injured=true;
             payoff -= 100;
 
         }else{
             next_move = 'R';
-            prev_move ='R';
+            
             win=false;
             payoff -= 2;
 
@@ -155,13 +155,13 @@ char& Bully::rule(const char& opp_curr_move, const char& opp_prev_move){
         double u = get_rv();
         if(u < prob_injury){
             next_move ='R';
-            prev_move ='R';
+            
             win=false;
             seriously_injured=true;
             payoff -= 100;
         }else{
             next_move = 'C';
-            prev_move ='C';
+            
             payoff -= 2;
         }
     }
@@ -180,12 +180,12 @@ class Retliator: public Animal{
 char& Retliator::rule(const char& opp_move){
     if(opp_move =='C'){
         next_move='C';   
-        prev_move = 'C';  
+        
     }else if(opp_move == 'D'){
         double u = get_rv();
         if(u < prob_injury){
             next_move ='R';
-            prev_move ='R';
+            
             win=false;
             seriously_injured=true;
             payoff -= 100;
@@ -193,10 +193,10 @@ char& Retliator::rule(const char& opp_move){
             double u = get_rv();
             if(u < ret_prob){
                 next_move ='D';
-                prev_move = 'D';
+               
             }else{
                 next_move ='C';
-                prev_move = 'C';
+                
             };
                 payoff -= 2;
         };
