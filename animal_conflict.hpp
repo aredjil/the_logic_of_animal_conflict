@@ -46,6 +46,10 @@ class Animal{
      * agents
      */
     double ret_prob;
+    /**
+     * Time limit for the contest.
+     */
+    int t_lim;
     Animal(){
         /**
          * All agents start with 0 payoff
@@ -56,11 +60,12 @@ class Animal{
         /**
          * Dangerous attacks 'D' have high probability of serious damage
          */
-        prob_injury = 0.4; // Probability of serious damage from an attack.
+        prob_injury = 0.9; // Probability of serious damage from an attack.
         /**
          * Retaliator will retaliate with high probability of a dangerous attack  
          */ 
         ret_prob = 0.9; // Retaliation probability. 
+        t_lim = 100; // Time limit for the contest 
 
     };
     /**
@@ -87,7 +92,7 @@ double Animal::get_rv(){
 
 class Mouse: public Animal{
     public: 
-    char& rule(const char & opp_move);
+    char& rule(const char & opp_move, const int &iter);
 };
 /**
  * Update rule for the mouse class 
@@ -95,20 +100,22 @@ class Mouse: public Animal{
  * the opponent plays D, then it retreats
  * and plays R. If the game continious
  * past a predetermined time it retreats R.  
+ * NOTE: WHAT SHOULD WE DO IF THE CONTEST ENDS AND THE OPPONNENT PLAYS D? 
  */
-char& Mouse::rule(const char& opp_move){
-    if(opp_move == 'D'){
-        next_move= 'R';
-    }else if (opp_move == 'C'){
-        next_move = 'C';
-        
-    }else if(opp_move =='R'){
-        next_move = 'C';
-        
-        win=true; // 1 
+char& Mouse::rule(const char& opp_move, const int &iter){
+    if(iter > t_lim){
+        next_move = 'R';
+    }else if(opp_move =='D'){
+        next_move = 'R';
+        double u = get_rv();
+        if(u<prob_injury){
+            payoff-=100;
+        }else{
+            payoff-=2;
+        }
     }else{
-        std::cerr<<"That is an illegal move"<<std::endl;
-    };
+        next_move='C';
+    }
     return next_move;
 };
 
@@ -280,4 +287,5 @@ char& Prober_Retaliator::rule(const char& opp_move){
          * After receiving a probe with hgih probability esclate (Play D as a response)
          */
     }
+    return next_move;
 };
