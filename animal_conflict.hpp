@@ -145,7 +145,7 @@ char &Mouse::rule(const char &opp_move, const int &iter)
 class Hawk : public Animal
 {
 public:
-    char &rule(const char &opp_move, const int &iter);
+    char &rule(const char &opp_move, const char &prev_move, const int &iter);
 };
 /**
  * Update rule for the Hawk Class,
@@ -154,41 +154,60 @@ public:
  * seriously injured then play R
  * or if the oponnent plays R.
  */
-char &Hawk::rule(const char &opp_move, const int &iter)
+char &Hawk::rule(const char &opp_move, const char &prev_move, const int &iter)
 {
-    if (opp_move == 'R')
+    if (iter == 0)
     {
-        win = true;
-        if (iter < t_lim)
-        {
-            next_move = 'R';
-            payoff += 60;
-        }
-        else
-        {
-            next_move = 'R';
-        }
-    }
-    else if (opp_move == 'D')
-    {
-        double u = get_rv();
-        if (u < prob_injury)
-        {
-            next_move = 'R';
-            win = false;
-            seriously_injured = true;
-            payoff -= 100;
-        }
-        else
-        {
-            next_move = 'D';
-
-            payoff -= 2;
-        }
+        /**
+         * If playing the first move play D.
+         */
+        next_move = 'D';
+        curr_move = 'D';
     }
     else
     {
-        next_move = 'D';
+        /**
+         * If the oponnent retreats +60 in payoff if the time is less than some limit
+         */
+        if (opp_move == 'R')
+        {
+            if (iter < t_lim)
+            {
+                payoff += 60;
+            }
+        }
+        /**
+         * Reply to C with D 
+         */
+        else if (opp_move == 'C')
+        {
+            next_move = 'D';
+            curr_move = 'D';
+        }
+        /**
+         * Reply to D with C if not seriously injured. 
+         */
+        else if (opp_move == 'D')
+        {
+            double u = get_rv();
+            if(u < prob_injury){
+                payoff -=100;
+                next_move = 'R';
+                curr_move = 'R';
+            }else{
+                payoff -= 2;
+                next_move = 'C';
+                curr_move = 'C';
+            }
+        }
+        /**
+         * If the opponent plays D succesively retreat.
+         */
+        else if (opp_move == 'D' && prev_move == 'D')
+        {
+            next_move = 'R';
+            curr_move = 'R';
+        }
     }
     return next_move;
 };
@@ -199,7 +218,7 @@ char &Hawk::rule(const char &opp_move, const int &iter)
 class Bully : public Animal
 {
 public:
-    char &rule(const char &opp_curr_move, const char &opp_prev_move);
+    char &rule(const char &opp_curr_move, const char &opp_prev_move, const int &iter);
 };
 /**
  * Update rule for the bully class
@@ -208,7 +227,7 @@ public:
  * responsed to D by C, play R if
  * opponent plays consuctive D.
  */
-char &Bully::rule(const char &opp_curr_move, const char &opp_prev_move)
+char &Bully::rule(const char &opp_curr_move, const char &opp_prev_move, const int &iter)
 {
     if (opp_curr_move == 'C')
     {
